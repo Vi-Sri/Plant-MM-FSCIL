@@ -40,7 +40,7 @@ def get_arguments():
 
 
 
-def run_MVPDR(cfg, v_prototypes, v_labels, test_features, test_labels, textual_prototypes,
+def run_Prototype_FS(cfg, v_prototypes, v_labels, test_features, test_labels, textual_prototypes,
                       clip_model, train_loader_F, weights):
     n_class =v_labels.shape[-1]
     adapter = nn.Linear(v_prototypes.shape[0], v_prototypes.shape[1], bias=False).to(clip_model.dtype).cuda()
@@ -89,7 +89,7 @@ def run_MVPDR(cfg, v_prototypes, v_labels, test_features, test_labels, textual_p
             t_max_logits = t_logits.max(dim=-1)[0]
             t_logits = gamma * t_mean_logits + bbeta * t_max_logits
 
-            MVPDR_logits = t_logits + v_logits * alpha
+            Prototype_FS_logits = t_logits + v_logits * alpha
             w1, w2, w3 = weights
 
             loss1 = F.cross_entropy(v_logits, target)
@@ -98,9 +98,9 @@ def run_MVPDR(cfg, v_prototypes, v_labels, test_features, test_labels, textual_p
             loss4 = F.cross_entropy(t_mean_logits, target)
             loss = w1 * loss1 + w2 * loss3 + w3 * loss4
 
-            acc = cls_acc(MVPDR_logits, target, labels=labels)["acc"]
-            correct_samples += acc / 100 * len(MVPDR_logits)
-            all_samples += len(MVPDR_logits)
+            acc = cls_acc(Prototype_FS_logits, target, labels=labels)["acc"]
+            correct_samples += acc / 100 * len(Prototype_FS_logits)
+            all_samples += len(Prototype_FS_logits)
             loss_list.append(loss.item())
 
             optimizer.zero_grad()
@@ -136,15 +136,15 @@ def run_MVPDR(cfg, v_prototypes, v_labels, test_features, test_labels, textual_p
         t_max_logits = t_logits.max(dim=-1)[0]
         t_logits = gamma * t_mean_logits + bbeta * t_max_logits
 
-        MVPDR_logits = t_logits + v_logits * alpha
+        Prototype_FS_logits = t_logits + v_logits * alpha
 
-        result = cls_acc(MVPDR_logits, test_labels, labels=labels)
+        result = cls_acc(Prototype_FS_logits, test_labels, labels=labels)
         acc = result["acc"]
         precision = result["precision"]
         recall = result["recall"]
         f1_score = result["f1"]
 
-        print("**** MVPDR test accuracy: {:.2f}, precision: {:.2f}, recall: {:.2f}, f1: {:.2f}. ****\n".format(acc, precision, recall, f1_score))
+        print("**** Prototype_FS test accuracy: {:.2f}, precision: {:.2f}, recall: {:.2f}, f1: {:.2f}. ****\n".format(acc, precision, recall, f1_score))
         if acc > best_acc:
             best_acc = acc
             best_precision = precision
@@ -155,7 +155,7 @@ def run_MVPDR(cfg, v_prototypes, v_labels, test_features, test_labels, textual_p
             torch.save(prompt_adapter.weight, cfg['cache_dir'] + "/best_prompt.pt")
 
     adapter.weight = torch.load(cfg['cache_dir'] + "/best_F_" + str(cfg['shots']) + "shots.pt")
-    print(f"**** After fine-tuning, MVPDR best test accuracy: {best_acc:.2f}, at epoch: {best_epoch}. ****\n")
+    print(f"**** After fine-tuning, Prototype_FS best test accuracy: {best_acc:.2f}, at epoch: {best_epoch}. ****\n")
 
 
     best_bbeta, best_alpha = bbeta, alpha
@@ -165,8 +165,8 @@ def run_MVPDR(cfg, v_prototypes, v_labels, test_features, test_labels, textual_p
     affinity = adapter(test_features)
     v_logits = ((-1) * (best_bbeta - best_bbeta * affinity)).exp() @ v_labels
 
-    MVPDR_logits = t_logits + v_logits * best_alpha
-    result = cls_acc_test(MVPDR_logits, test_labels, labels=labels)
+    Prototype_FS_logits = t_logits + v_logits * best_alpha
+    result = cls_acc_test(Prototype_FS_logits, test_labels, labels=labels)
     acc = result["acc"]
     precision = result["precision"]
     recall = result["recall"]
@@ -180,8 +180,8 @@ def run_MVPDR(cfg, v_prototypes, v_labels, test_features, test_labels, textual_p
     best_f1_score = f1_score
 
 
-    # print("**** MVPDR's test accuracy: {:.2f}. ****\n".format(acc))
-    print("**** MVPDR test accuracy: {:.2f}, precision: {:.3f}, recall: {:.3f}, f1: {:.3f}. ****\n".format(best_acc, best_precision, best_recall, best_f1_score))
+    # print("**** Prototype_FS's test accuracy: {:.2f}. ****\n".format(acc))
+    print("**** Prototype_FS test accuracy: {:.2f}, precision: {:.3f}, recall: {:.3f}, f1: {:.3f}. ****\n".format(best_acc, best_precision, best_recall, best_f1_score))
 
     conf_matrix = np.array(conf_matrix.cpu())
 
@@ -271,7 +271,7 @@ def main():
     test_features, test_labels = pre_load_features(cfg, "test", clip_model, test_loader)
 
 
-    best_acc, best_precision, best_recall, best_f1_score, best_epoch = run_MVPDR(cfg, v_prototypes, v_labels, test_features, test_labels,
+    best_acc, best_precision, best_recall, best_f1_score, best_epoch = run_Prototype_FS(cfg, v_prototypes, v_labels, test_features, test_labels,
                                          textual_prototypes, clip_model, train_loader_F, cfg["weights"])
 
     end_time = time.time()
@@ -286,7 +286,7 @@ def main():
     output_file = os.path.join(output_path, f"{w1}_{w2}_{w3}_{cfg['alpha']}_{cfg['bbeta']}_{cfg['gamma']}.txt")
 
     with open(output_file, "w") as f:
-        f.write("**** MVPDR test accuracy: {:.2f}, precision: {:.3f}, recall: {:.3f}, f1: {:.3f}. ****\n".format(best_acc, best_precision, best_recall, best_f1_score))
+        f.write("**** Prototype_FS test accuracy: {:.2f}, precision: {:.3f}, recall: {:.3f}, f1: {:.3f}. ****\n".format(best_acc, best_precision, best_recall, best_f1_score))
         f.write(f"Best epoch: {best_epoch}/{cfg['train_epoch']}\n")
         f.write(f"Time used: {elapsed_time}")
 
