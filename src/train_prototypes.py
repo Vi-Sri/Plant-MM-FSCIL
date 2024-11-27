@@ -247,9 +247,9 @@ def main():
 
     # Textual features
     print("\nGetting textual features as CLIP's classifier.")
-    path1 = "gpt_files_plt44/plantwild_prompts_50_18.json"
-    path2 = "gpt_files_plt44/plantdoc_prompts_50_25.json"
-    path3 = "gpt_files_plt44/plantvillage_prompts_50_25.json"
+    path1 = "text_prompts/plantwild_prompts_50_18.json"
+    path2 = "text_prompts/plantdoc_prompts_50_25.json"
+    path3 = "text_prompts/plantvillage_prompts_50_25.json"
     if cfg['dataset'] == "plantwild":
         textual_prototypes = build_textual_prototypes(dataset.classnames, dataset.template, clip_model, path1)
     elif cfg['dataset'] == "plantdoc":
