@@ -1,8 +1,6 @@
-# ------ root_path/dataset_name ------
-root_path: ''
+root_path: '/lustre/fs1/home/sr463454/CLT/plantvillage'
 
 
-# ------ Load Cache and Features ------
 load_cache: False
 load_pre_feat: False
 

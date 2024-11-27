@@ -12,13 +12,13 @@ import torchvision.transforms as transforms
 from datasets import build_dataset
 from datasets.utils import build_data_loader
 import clip
-from utils import *
+from tip_utils import *
 
 
 def get_arguments():
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--config', dest='config', help='settings of Tip-Adapter in yaml format')
+    parser.add_argument('--config', dest='config', help='settings of Disease-Tip-Adapter in yaml format')
     args = parser.parse_args()
 
     return args
@@ -33,7 +33,7 @@ def run_tip_adapter(cfg, cache_keys, cache_values, val_features, val_labels, tes
     acc = cls_acc(clip_logits, val_labels)
     print("\n**** Zero-shot CLIP's val accuracy: {:.2f}. ****\n".format(acc))
 
-    # Tip-Adapter
+    # Disease-Tip-Adapter
     beta, alpha = cfg['init_beta'], cfg['init_alpha']
     
     affinity = val_features @ cache_keys
@@ -41,7 +41,7 @@ def run_tip_adapter(cfg, cache_keys, cache_values, val_features, val_labels, tes
     
     tip_logits = clip_logits + cache_logits * alpha
     acc = cls_acc(tip_logits, val_labels)
-    print("**** Tip-Adapter's val accuracy: {:.2f}. ****\n".format(acc))
+    print("**** Disease-Tip-Adapter's val accuracy: {:.2f}. ****\n".format(acc))
 
     # Search Hyperparameters
     best_beta, best_alpha = search_hp(cfg, cache_keys, cache_values, val_features, val_labels, clip_weights)
@@ -54,13 +54,13 @@ def run_tip_adapter(cfg, cache_keys, cache_values, val_features, val_labels, tes
     acc = cls_acc(clip_logits, test_labels)
     print("\n**** Zero-shot CLIP's test accuracy: {:.2f}. ****\n".format(acc))
 
-    # Tip-Adapter    
+    # Disease-Tip-Adapter    
     affinity = test_features @ cache_keys
     cache_logits = ((-1) * (best_beta - best_beta * affinity)).exp() @ cache_values
     
     tip_logits = clip_logits + cache_logits * best_alpha
     acc = cls_acc(tip_logits, test_labels)
-    print("**** Tip-Adapter's test accuracy: {:.2f}. ****\n".format(acc))
+    print("**** Disease-Tip-Adapter's test accuracy: {:.2f}. ****\n".format(acc))
 
 
 def run_tip_adapter_F(cfg, cache_keys, cache_values, val_features, val_labels, test_features, test_labels, clip_weights, clip_model, train_loader_F):
@@ -117,14 +117,14 @@ def run_tip_adapter_F(cfg, cache_keys, cache_values, val_features, val_labels, t
         tip_logits = clip_logits + cache_logits * alpha
         acc = cls_acc(tip_logits, test_labels)
 
-        print("**** Tip-Adapter-F's test accuracy: {:.2f}. ****\n".format(acc))
+        print("**** Disease-Tip-Adapter-F's test accuracy: {:.2f}. ****\n".format(acc))
         if acc > best_acc:
             best_acc = acc
             best_epoch = train_idx
             torch.save(adapter.weight, cfg['cache_dir'] + "/best_F_" + str(cfg['shots']) + "shots.pt")
     
     adapter.weight = torch.load(cfg['cache_dir'] + "/best_F_" + str(cfg['shots']) + "shots.pt")
-    print(f"**** After fine-tuning, Tip-Adapter-F's best test accuracy: {best_acc:.2f}, at epoch: {best_epoch}. ****\n")
+    print(f"**** After fine-tuning, Disease-Tip-Adapter-F's best test accuracy: {best_acc:.2f}, at epoch: {best_epoch}. ****\n")
 
     print("\n-------- Searching hyperparameters on the val set. --------")
 
@@ -138,7 +138,7 @@ def run_tip_adapter_F(cfg, cache_keys, cache_values, val_features, val_labels, t
     
     tip_logits = clip_logits + cache_logits * best_alpha
     acc = cls_acc(tip_logits, test_labels)
-    print("**** Tip-Adapter-F's test accuracy: {:.2f}. ****\n".format(max(best_acc, acc)))
+    print("**** Disease-Tip-Adapter-F's test accuracy: {:.2f}. ****\n".format(max(best_acc, acc)))
 
 
 def main():
@@ -196,10 +196,10 @@ def main():
     print("\nLoading visual features and labels from test set.")
     test_features, test_labels = pre_load_features(cfg, "test", clip_model, test_loader)
 
-    # ------------------------------------------ Tip-Adapter ------------------------------------------
+    # ------------------------------------------ Disease-Tip-Adapter ------------------------------------------
     run_tip_adapter(cfg, cache_keys, cache_values, val_features, val_labels, test_features, test_labels, clip_weights)
 
-    # ------------------------------------------ Tip-Adapter-F ------------------------------------------
+    # ------------------------------------------ Disease-Tip-Adapter-F ------------------------------------------
     run_tip_adapter_F(cfg, cache_keys, cache_values, val_features, val_labels, test_features, test_labels, clip_weights, clip_model, train_loader_F)
            
 
