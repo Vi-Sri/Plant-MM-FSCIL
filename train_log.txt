@@ -1,0 +1,85 @@
+Running configs.
+{'root_path': '/fs1/groups/chen_chen/plant-disease', 'load_cache': False, 'load_pre_feat': False, 'dataset': 'plantwild', 'shots': 0, 'backbone': 'RN101', 'lr': 0.001, 'augment_epoch': 5, 'train_epoch': 30, 'cache_dir': './caches/plantwild', 'init_alpha': 0.3, 'weights': [1, 0.1, 0.1], 'alpha': 0.3, 'bbeta': 0.5, 'gamma': 0.5} 
+
+Preparing dataset.
+Loading split from txt file...
+
+Getting textual features as CLIP's classifier.
+using gpt-prompts
+
+Constructing visual prototypes.
+Augment Epoch: 0 / 5
+100% 408/408 [03:35<00:00,  1.89it/s]
+Augment Epoch: 1 / 5
+100% 408/408 [03:24<00:00,  2.00it/s]
+Augment Epoch: 2 / 5
+100% 408/408 [03:37<00:00,  1.88it/s]
+Augment Epoch: 3 / 5
+100% 408/408 [03:33<00:00,  1.91it/s]
+Augment Epoch: 4 / 5
+100% 408/408 [03:36<00:00,  1.88it/s]
+
+Loading visual features and labels from test set.
+100% 115/115 [01:06<00:00,  1.73it/s]
+Train Epoch: 0 / 30
+100% 408/408 [03:41<00:00,  1.85it/s]
+LR: 0.000997, Acc: 0.4944 (6449.0/13045), Loss: 2.8636
+**** MVPDR test accuracy: 56.62, precision: 58.55, recall: 51.19, f1: 50.46. ****
+
+Train Epoch: 1 / 30
+100% 408/408 [03:27<00:00,  1.96it/s]
+LR: 0.000989, Acc: 0.6041 (7881.0/13045), Loss: 1.8735
+**** MVPDR test accuracy: 58.55, precision: 59.53, recall: 53.88, f1: 53.07. ****
+
+Train Epoch: 2 / 30
+100% 408/408 [03:41<00:00,  1.84it/s]
+LR: 0.000976, Acc: 0.6327 (8253.0/13045), Loss: 1.6477
+**** MVPDR test accuracy: 59.40, precision: 64.07, recall: 54.84, f1: 54.94. ****
+
+Train Epoch: 3 / 30
+100% 408/408 [03:36<00:00,  1.89it/s]
+LR: 0.000957, Acc: 0.6610 (8623.0/13045), Loss: 1.5143
+**** MVPDR test accuracy: 61.41, precision: 65.61, recall: 56.94, f1: 56.34. ****
+
+Train Epoch: 4 / 30
+100% 408/408 [03:27<00:00,  1.97it/s]
+LR: 0.000933, Acc: 0.6824 (8902.0/13045), Loss: 1.4113
+**** MVPDR test accuracy: 62.31, precision: 62.94, recall: 58.22, f1: 57.83. ****
+
+Train Epoch: 5 / 30
+100% 408/408 [03:39<00:00,  1.86it/s]
+LR: 0.000905, Acc: 0.6947 (9062.0/13045), Loss: 1.3615
+**** MVPDR test accuracy: 62.69, precision: 63.59, recall: 58.73, f1: 58.17. ****
+
+Train Epoch: 6 / 30
+100% 408/408 [03:40<00:00,  1.85it/s]
+LR: 0.000872, Acc: 0.7037 (9180.0/13045), Loss: 1.2976
+**** MVPDR test accuracy: 62.03, precision: 62.86, recall: 57.68, f1: 57.07. ****
+
+Train Epoch: 7 / 30
+100% 408/408 [03:35<00:00,  1.89it/s]
+LR: 0.000835, Acc: 0.7141 (9315.0/13045), Loss: 1.2524
+**** MVPDR test accuracy: 63.29, precision: 63.15, recall: 59.35, f1: 58.44. ****
+
+Train Epoch: 8 / 30
+100% 408/408 [03:28<00:00,  1.96it/s]
+LR: 0.000794, Acc: 0.7295 (9516.0/13045), Loss: 1.2016
+**** MVPDR test accuracy: 63.83, precision: 64.30, recall: 59.07, f1: 58.58. ****
+
+Train Epoch: 9 / 30
+100% 408/408 [03:35<00:00,  1.90it/s]
+LR: 0.000750, Acc: 0.7315 (9543.0/13045), Loss: 1.1724
+**** MVPDR test accuracy: 64.24, precision: 65.69, recall: 59.85, f1: 59.42. ****
+
+Train Epoch: 10 / 30
+100% 408/408 [03:32<00:00,  1.92it/s]
+LR: 0.000703, Acc: 0.7440 (9705.0/13045), Loss: 1.1404
+**** MVPDR test accuracy: 65.00, precision: 64.35, recall: 61.64, f1: 61.36. ****
+
+Train Epoch: 11 / 30
+100% 408/408 [03:34<00:00,  1.91it/s]
+LR: 0.000655, Acc: 0.7595 (9908.0/13045), Loss: 1.0879
+**** MVPDR test accuracy: 64.92, precision: 64.54, recall: 61.75, f1: 61.15. ****
+
+Train Epoch: 12 / 30
+ 27% 109/408 [01:01<00:54,  5.44it/s]
